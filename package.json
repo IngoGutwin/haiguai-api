@@ -1,0 +1,10 @@
+{
+    "scripts": {
+        "watch": "npm run client & npm run server",
+        "client": "npm run watch --prefix client",
+        "server": "npm run watch --prefix server",
+        "kill-server": "sudo fuser -k 8000/tcp",
+        "kill-client": "sudo fuser -k 8080/tcp",
+        "kill-ports": "npm run kill-server && npm run kill-client"
+    }
+}

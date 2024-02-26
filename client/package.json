@@ -1,0 +1,15 @@
+{
+  "name": "haiguai-blog",
+  "version": "1.0.0",
+  "description": "simple blog",
+  "scripts": {
+    "watch": "web-dev-server --node-resolve --watch index.html"
+  },
+  "author": "Ingo Gutwin",
+  "license": "ISC",
+  "devDependencies": {
+    "@web/dev-server": "^0.4.2",
+    "eslint": "^8.56.0",
+    "prettier": "3.2.5"
+  }
+}
