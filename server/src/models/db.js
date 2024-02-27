@@ -1,6 +1,6 @@
 const mariadb = require('mariadb');
-const path = require('node:path');
 require('dotenv').config();
+const dbHelper = require('./db.helper');
 
 const connectionConfig = {
   host: process.env.MARIADB_HOST,
@@ -15,8 +15,9 @@ const pool = mariadb.createPool(connectionConfig);
 
 /**
  * Creates a new db connection
+ * @async
  * @function
- * @returns {Promise<import('mariadb').Connection}
+ * @returns {Promise<Connection>}
  * @throws {Error}
  */
 async function fetchNewConnection() {
@@ -28,31 +29,71 @@ async function fetchNewConnection() {
 }
 
 /**
- * write a new Query to database
+ * send a new Query to database
  * @function
- * @param {Promise<connection>, sqlQuery, Array, }
+ * @param { sqlQuery, Array, }
  * @returns {Object}
  */
 async function postQuery(sqlQuery, writableData) {
   let connection;
   try {
     connection = await fetchNewConnection();
-    await connection.query(sqlQuery, writableData);
     return {
       ok: true,
-      message: 'new user created',
+      queryResult: await connection.query(sqlQuery, writableData),
     };
   } catch (err) {
-    console.error(err);
     return {
       ok: false,
-      message: err.sqlMessage
+      message: err.sqlMessage,
     };
   } finally {
     connection.end();
   }
 }
 
+/**
+ * interface
+ * @async
+ * @function
+ * @param { Array }
+ * @returns { Object }
+ *
+ */
+async function getUsersPassword(sqlTableValues) {
+  let sqlQuery = 'SELECT password FROM users WHERE username = ? OR email = ?';
+  let result = await postQuery(sqlQuery, sqlTableValues);
+  if (!result.ok || result.queryResult[0] === undefined) {
+    return { ok: false, message: 'no such user!' };
+  }
+  return {
+    ok: true,
+    password: result.queryResult[0].password,
+  };
+}
+
+/**
+ * interface
+ * @async
+ * @function
+ * @param { Array }
+ * @returns { Object }
+ *
+ */
+async function postNewUser(sqlTableValues) {
+  let sqlQuery = 'INSERT INTO users (uuid, username, email, password) VALUE (?, ?, ?, ?)';
+  let result = await postQuery(sqlQuery, sqlTableValues);
+  if (result.ok) {
+    return {
+      ok: true,
+      message: 'new User created',
+    };
+  }
+  return dbHelper.createErrorMessage(result);
+}
+
 module.exports = {
-  postQuery,
+  pool,
+  postNewUser,
+  getUsersPassword,
 };

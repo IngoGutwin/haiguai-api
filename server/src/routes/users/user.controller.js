@@ -9,6 +9,10 @@ function httpGetUserFromUserName(req, res) {
   // return res.status(200).json(getUserFromUserName(req.params.eMail));
 }
 
+async function httpUserLoginRequest(req, res) {
+  
+}
+
 async function httpPostNewUser(req, res) {
   let createUserResult = await user.userFactory(req.body);
   if (createUserResult.ok) {
