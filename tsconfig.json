@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2018" /* Specify ECMAScript target version */,
+    "module": "CommonJS" /* Specify module code generation */,
+    "strict": true /* Enable all strict type-checking options */,
+    "esModuleInterop": true /* Allow default imports from modules with no default export */,
+    "skipLibCheck": true /* Skip type checking of declaration files */,
+    "outDir": "./dist",
+    "forceConsistentCasingInFileNames": true /* Ensure that casing is consistent in file names */,
+    "resolveJsonModule": true /* Enable importing JSON modules */,
+    "baseUrl": "./" /* Base directory to resolve non-absolute module names */,
+    "paths": {
+      "*": ["node_modules/*", "src/*"]
+      /* Use "src" directory as the root for module resolution */
+    },
+    "moduleResolution": "Node"
+  },
+  "include": ["src/**/*.ts"] /* Include all TypeScript files under "src" directory */,
+  "exclude": ["node_modules"] /* Exclude "node_modules" directory */
+}
