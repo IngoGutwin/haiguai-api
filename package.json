@@ -1,7 +1,7 @@
 {
   "name": "haiguai-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "a nodejs rest-api",
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
@@ -9,8 +9,16 @@
     "dev": "nodemon dist/server.js",
     "test": "jest"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "nodejs",
+    "jest",
+    "supertest",
+    "typescript",
+    "api",
+    "mariadb",
+    "passportjs"
+  ],
+  "author": "Ingo Gutwin",
   "license": "ISC",
   "dependencies": {
     "@types/morgan": "^1.9.9",
@@ -35,6 +43,7 @@
     "@types/node": "^20.12.7",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^6.0.2",
+    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^7.7.0",
     "@typescript-eslint/parser": "^7.7.0",
     "eslint": "^8.57.0",
