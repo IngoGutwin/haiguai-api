@@ -1,8 +1,20 @@
+import { bold, green, red } from 'kleur/colors';
 import { Request, Response } from "express";
+import User from '../../models/user.model';
+import { UserModel, UserValidationResult } from '../../interfaces/user';
 
-function httpRegisterNewUser(req: Request, res: Response) {
-  console.log(req.body);
-  return res.status(200).json({ok: true, message: 'User created'});
+/**
+ * validate and prepare user data for the database 
+ * @param req 
+ * @param res 
+ * @returns 
+ */
+function httpRegisterNewUser(req: Request, res: Response): Response {
+  const isUserValid: UserValidationResult = User.validateUser(req.body);
+  if (!isUserValid.ok) {
+    return res.status(400).json({ok: isUserValid.ok, error: isUserValid.message});
+  }
+  return res.status(201).json({ok: isUserValid.ok, message: isUserValid.message, user: req.body});
 }
 
 export {
