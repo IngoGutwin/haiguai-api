@@ -10,7 +10,7 @@ import { UserModel, UserValidationResult } from '../../interfaces/user';
  * @returns 
  */
 function httpRegisterNewUser(req: Request, res: Response): Response {
-  const isUserValid: UserValidationResult = User.validateUser(req.body);
+  const isUserValid: UserValidationResult = User(req.body);
   if (!isUserValid.ok) {
     return res.status(400).json({ok: isUserValid.ok, error: isUserValid.message});
   }
