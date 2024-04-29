@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import * as jsonwebtoken from 'jsonwebtoken';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { UserHashes , UserJwtToken } from '../interfaces/user';
+import { UserHashes , UserJwtToken } from '../types/user';
 
 const pathToPrivateKey: string = path.join(__dirname, '../../id_rsa_priv.pem');
 const PRIVATE_KEY: string = fs.readFileSync(pathToPrivateKey, 'utf8');
@@ -14,7 +14,15 @@ function validatePassword(password: string, hash: string, salt: string): boolean
   return hash === hashVerify;
 }
 
-const passwordRequirements = {
+type PasswordRequirements = {
+  minLength: number;
+  requireUppercase: boolean,
+  requireLowercase: boolean,
+  requireNumbers: boolean,
+  requireSpecialChars: boolean,
+  specialChars: RegExp // Customize the special characters as needed
+}
+const passwordRequirements: PasswordRequirements = {
   minLength: 8,
   requireUppercase: true,
   requireLowercase: true,
@@ -23,7 +31,7 @@ const passwordRequirements = {
   specialChars: /[^A-Za-z0-9]/ // Customize the special characters as needed
 }
 
-function checkPasswordRequirements(password: string): boolean {
+function validateNewPasswordRequirements(password: string): boolean {
   if (password.length < passwordRequirements.minLength) {
     return false;
   }
@@ -42,7 +50,7 @@ function checkPasswordRequirements(password: string): boolean {
   return true;
 }
 
-function genPassword(password: string): UserHashes {
+function generateNewUserHashes(password: string): UserHashes {
   const userSalt: string = crypto.randomBytes(32).toString('hex');
   const passwordHash: string = crypto.pbkdf2Sync(password, userSalt, 10000, 64, 'sha512').toString('hex');
   return {
@@ -69,7 +77,7 @@ function issueJWT(userId: string): UserJwtToken {
 
 export {
   validatePassword,
-  checkPasswordRequirements,
-  genPassword,
+  validateNewPasswordRequirements,
+  generateNewUserHashes,
   issueJWT,
 };

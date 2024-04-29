@@ -1,10 +1,24 @@
 import { getDbConnection } from '../service/mariadb.service';
 import { Connection } from 'mariadb';
-import { NewUser, UserModel, UserValidationResult } from '../interfaces/user';
+import {
+  NewUser,
+  Author,
+  NewUserValidationResult,
+  UserHashes,
+  NewUserMethods,
+} from '../types/user';
 import { v4 as uuidV4 } from 'uuid';
-import { checkPasswordRequirements } from '../config/password.utils';
+import { generateNewUserHashes, validateNewPasswordRequirements } from '../config/password.utils';
+import { use } from 'passport';
 
-async function add({ username, password, userSalt, email }: UserModel) {}
+/**
+ * save new user to database
+ * @param user
+ * @param userValues
+ */
+async function add(user: Author, userValues: Map<string, string>): Promise<void> {
+  // const connection: Connection = await getDbConnection();
+}
 
 /**
  * return all user attributes of a user
@@ -27,60 +41,84 @@ async function getBy(attributeName: string, attributeValue: Array<string>) {
   }
 }
 
-function getNewUserMap(
-  username: string,
-  email: string,
-  passwordHash: string,
-  userSalt: string,
-): Map<string, string> {
-  const creationDate = new Date().toISOString();
-  const newUuid = uuidV4();
-  const user: Map<string, string> = new Map([
-    ['userId', newUuid],
-    ['username', username],
-    ['email', email],
-    ['passwordHash', passwordHash],
-    ['userSalt', userSalt],
-    ['role', 'Author'],
-    ['createdAt', creationDate],
-    ['updatedAt', creationDate],
-  ]);
-  return user;
-}
+// function createNewUserMap(
+//   username: string,
+//   email: string,
+//   hashes: UserHashes,
+// ): Map<string, string> {
+//   const creationDate = new Date().toISOString();
+//   const newUuid = uuidV4();
+//   const user: Map<keyof Author, string> = new Map([
+//     ['userId', newUuid],
+//     ['username', username],
+//     ['email', email],
+//     ['hashes', hashes],
+//     ['role', 'Author'],
+//     ['createdAt', creationDate],
+//     ['updatedAt', creationDate],
+//   ]);
+//   return user;
+// }
+
 /**
- * checks if provided data is valid
- * @param userAttributes user attributes from request body
+ * validate if the user has input all required fields 
+ * @param user NewUser
+ * @returns 
  */
-const validate = ({ username, email, password }): UserValidationResult => {
-  const result: UserValidationResult = {
+function validateUserFields(user: NewUser): NewUserValidationResult {
+  const result: NewUserValidationResult = {
     ok: false,
-    message: null,
-  };
-  if (username === undefined) {
+    message: '' 
+  }
+  if (user.username === undefined) {
     result.message = 'no username provided';
-    return result;
-  } else if (email === undefined) {
+    return result
+  } else if (user.email === undefined) {
     result.message = 'no email provided';
-    return result;
-  } else if (password === undefined || !checkPasswordRequirements(password)) {
-    result.message = "password don't meet requirements";
-    return result;
+    return result
+  } else if (user.password === undefined) {
+    result.message = 'no password provided';
+    return result
   }
   result.ok = true;
   return result;
-};
-
-const User = (
-  { username, email, password }: UserModel,
-  validate: UserValidationResult,
-): UserValidationResult => {
-  const user = { username, email, password, validate };
-  return { ok: false };
 }
 
-function userFactory(user: NewUser): UserValidationResult {
+function User({ username, email, password }: NewUser): NewUserMethods {
+  const user: NewUser = {
+    username: username,
+    email: email,
+    password: password,
+  };
+  /**
+   * validate new user registration requirements
+   * @returns NewUserValidationResult
+   */
+  function validate(): NewUserValidationResult {
+    const result: NewUserValidationResult = {
+      ok: false,
+      message: null,
+    };
+    const areUserFieldsValid: NewUserValidationResult = validateUserFields(user);
+    if (!areUserFieldsValid.ok) {
+      return areUserFieldsValid;
+    }
+    const isPasswordValid: boolean = validateNewPasswordRequirements(user.password);
+    if (!isPasswordValid) {
+      result.message = 'password don\'t meet requirements!';
+      return result;
+    }
+     
+    result.ok = true;
+    result.message = 'user created';
+    return result;
+  }
 
-  return { ok: false };
+  return {
+    validate,
+  };
 }
 
-export default userFactory;
+export function userFactory(user: NewUser): NewUserMethods {
+  return User(user);
+}

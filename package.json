@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "tsc": "tsc -w src/server.ts --outDir dist",
-    "dev": "nodemon dist/server.js",
+    "dev": "nodemon dist/server.js & npm run tsc",
     "test": "jest"
   },
   "keywords": [

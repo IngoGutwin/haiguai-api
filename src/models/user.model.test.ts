@@ -1,10 +1,12 @@
 import { describe, expect, test } from '@jest/globals';
-import { UserModel } from '../interfaces/user';
-import {  } from './user.model';
-import User from './user.model';
+import { NewUser, NewUserMethods, NewUserValidationResult } from '../types/user';
+import { userFactory } from './user.model';
 
-describe('Test user functions', () =>{
-  test('user prototypes', async () => {
-    console.log(Object.getPrototypeOf(User));
-  })
-})
+describe('Test user functions', () => {
+  const newUser: NewUserMethods = userFactory({ username: 'Test User', email: 'test@test.com', password: 'kdkad987AFD..asdf3',});
+
+  test('create new User and check the password validation', async () => {
+    const isUserValid: NewUserValidationResult = newUser.validate();
+    expect(isUserValid.ok).toBe(true);
+  });
+});
