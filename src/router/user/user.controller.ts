@@ -1,23 +1,20 @@
-import { bold, green, red } from 'kleur/colors';
-import { Request, Response } from "express";
-import { userFactory } from '../../models/user.model';
-import { UserValidationResult, NewUser, NewUserMethods } from '../../types/user';
+import { Request, Response } from 'express';
+import { newUserFactory } from '../../models/user.model';
+import { NewUserValidationResult, NewUserMethods } from '../../types/user';
 
 /**
- * validate and prepare user data for the database 
- * @param req 
- * @param res 
- * @returns 
+ * create new User and run the validation function 
+ * @param req
+ * @param res
+ * @returns
  */
-function httpRegisterNewUser(req: Request, res: Response): Response {
-  const newUser: NewUserMethods = userFactory(req.body);
-  const isUserValid: UserValidationResult = newUser.validate();
+async function httpRegisterNewUser(req: Request, res: Response): Promise<Response> {
+  const NewUser: NewUserMethods = newUserFactory(req.body);
+  const isUserValid: NewUserValidationResult = await NewUser.validate();
   if (!isUserValid.ok) {
-    return res.status(400).json({ok: isUserValid.ok, error: isUserValid.message});
+    return res.status(400).json({ ok: isUserValid.ok, message: isUserValid.message });
   }
-  return res.status(201).json({ok: isUserValid.ok, message: isUserValid.message, user: req.body});
+  return res.status(201).json({ ok: isUserValid.ok, message: isUserValid.message });
 }
 
-export {
-  httpRegisterNewUser,
-}
+export { httpRegisterNewUser };

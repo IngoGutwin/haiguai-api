@@ -2,29 +2,24 @@ export type NewUser = {
   username: string;
   email: string;
   password: string;
-  hashes?: UserHashes;
 }
 
 export interface NewUserMethods {
-  validate: () => UserValidationResult;
+  validate: () => Promise<NewUserValidationResult>;
 }
 
-export type AuthorMethods = NewUserMethods & {
+export type UserHashes = {
+  userSalt: string;
+  passwordHash: string;
+};
 
-}
-
-export type Author = NewUser & {
+export type ValidUser = NewUser & {
   userId: string;
   role: string;
   createdAt?: Date;
   updatedAt?: Date;
-  hashes?: UserHashes;
+  salt?: string;
 }
-
-export type UserHashes = {
-  userSalt?: string | undefined;
-  passwordHash?: string | undefined;
-};
 
 export type UserJwtToken = {
   token: string | undefined;

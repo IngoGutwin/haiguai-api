@@ -17,11 +17,11 @@ describe('Test new User Registration POST /api/1/user/register', () => {
       .expect('Content-Type', /json/)
       .expect(400);
 
-    const responseMessage = response.body.error;
-    expect(responseMessage).toBe('password don\'t meet requirements');
+    const responseMessage = response.body.message;
+    expect(responseMessage).toBe('password don\'t meet requirements!');
   });
 
-  test('It should respond with 201 success and the testUser object', async () => {
+  test('It should respond with 201 success and RequestObject', async () => {
     const newBetterPassword = 'AEj808.3?jA'
     testUserOne.password = newBetterPassword;
     
@@ -31,7 +31,20 @@ describe('Test new User Registration POST /api/1/user/register', () => {
       .expect('Content-Type', /json/)
       .expect(201);
 
-    const responseBody = response.body.user;
-    expect(responseBody).toStrictEqual(testUserOne);
+    const responseBody = response.body.message;
+    expect(responseBody).toBe('User created');
+  });
+
+  test('It should respond with 400 Error User already exists', async () => {
+    const newBetterPassword = 'AEj808.3?jA'
+    testUserOne.password = newBetterPassword;
+    const response: Response = await request(app)
+      .post('/api/1/user/register')
+      .send(testUserOne)
+      .expect('Content-Type', /json/)
+      .expect(400);
+
+    const responseBody = response.body.message;
+    expect(responseBody).toBe('User already exist!');
   });
 });
